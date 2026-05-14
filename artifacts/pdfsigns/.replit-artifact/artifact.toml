@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "PdfSigns - PDF Tools"
+version = "1.0.0"
+id = "artifacts/pdfsigns"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23211
+
+[services.development]
+run = "pnpm --filter @workspace/pdfsigns run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/pdfsigns", "run", "build" ]
+publicDir = "artifacts/pdfsigns/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23211"
+BASE_PATH = "/"
