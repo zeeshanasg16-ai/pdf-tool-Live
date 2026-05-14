@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { FileText, Signature, Camera, Menu, SplitSquareHorizontal } from "lucide-react";
+import { FileText, Signature, Camera, Menu, SplitSquareHorizontal, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
@@ -9,6 +9,7 @@ export function Navbar() {
     { href: "/pdf-editor", label: "PDF Editor", icon: FileText },
     { href: "/e-sign", label: "E-Sign", icon: Signature },
     { href: "/pdf-merge-split", label: "Merge & Split", icon: SplitSquareHorizontal },
+    { href: "/pdf-compress", label: "Compress", icon: Gauge },
     { href: "/passport-photo", label: "Passport Photo", icon: Camera },
   ];
 

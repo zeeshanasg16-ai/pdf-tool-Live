@@ -9,6 +9,7 @@ import PdfEditor from "@/pages/PdfEditor";
 import ESign from "@/pages/ESign";
 import PassportPhoto from "@/pages/PassportPhoto";
 import PdfMergeSplit from "@/pages/PdfMergeSplit";
+import PdfCompress from "@/pages/PdfCompress";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ function Router() {
           <Route path="/e-sign" component={ESign} />
           <Route path="/passport-photo" component={PassportPhoto} />
           <Route path="/pdf-merge-split" component={PdfMergeSplit} />
+          <Route path="/pdf-compress" component={PdfCompress} />
           <Route component={NotFound} />
         </Switch>
       </main>

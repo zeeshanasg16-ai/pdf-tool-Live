@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, FileText, Signature, Camera, ShieldCheck, Zap, Lock, SplitSquareHorizontal } from "lucide-react";
+import { ArrowRight, FileText, Signature, Camera, ShieldCheck, Zap, Lock, SplitSquareHorizontal, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -34,7 +34,7 @@ export default function Home() {
       {/* Tools Grid */}
       <section className="py-20 px-4 bg-background">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <ToolCard 
               title="PDF Editor"
               description="Add text, highlights, and annotations to any PDF document directly in your browser."
@@ -55,6 +55,13 @@ export default function Home() {
               icon={SplitSquareHorizontal}
               href="/pdf-merge-split"
               color="bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400"
+            />
+            <ToolCard 
+              title="Compress PDF"
+              description="Reduce PDF file size with three compression levels. Fast, private, and fully browser-based."
+              icon={Gauge}
+              href="/pdf-compress"
+              color="bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400"
             />
             <ToolCard 
               title="Passport Photo"
