@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import PdfEditor from "@/pages/PdfEditor";
 import ESign from "@/pages/ESign";
 import PassportPhoto from "@/pages/PassportPhoto";
+import PdfMergeSplit from "@/pages/PdfMergeSplit";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ function Router() {
           <Route path="/pdf-editor" component={PdfEditor} />
           <Route path="/e-sign" component={ESign} />
           <Route path="/passport-photo" component={PassportPhoto} />
+          <Route path="/pdf-merge-split" component={PdfMergeSplit} />
           <Route component={NotFound} />
         </Switch>
       </main>
