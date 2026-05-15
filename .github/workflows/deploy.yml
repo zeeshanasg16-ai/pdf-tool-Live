@@ -33,16 +33,14 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Build Website
-        run: |
-          cd artifacts/pdfsigns
-          pnpm build
+        run: pnpm build
         env:
           CI: false
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './artifacts/pdfsigns/dist'
+          path: './dist'
 
   deploy:
     environment:
