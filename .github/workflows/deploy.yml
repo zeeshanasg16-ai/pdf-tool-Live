@@ -28,15 +28,15 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-        # Note: We are running this from the ROOT now to find those missing libraries
+        # The --ignore-workspace flag is the key here
+        run: pnpm install --no-frozen-lockfile --ignore-workspace
+        working-directory: ./artifacts
 
       - name: Build
-        run: pnpm run build --filter ./artifacts/**
+        run: pnpm run build
+        working-directory: ./artifacts
         env:
           CI: false
-          VITE_SKIP_TYPECHECK: true
-          NODE_OPTIONS: "--max_old_space_size=4096"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
