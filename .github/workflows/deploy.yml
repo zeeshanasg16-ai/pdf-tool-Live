@@ -32,8 +32,11 @@ jobs:
         working-directory: ./artifacts
 
       - name: Build
-        run: VITE_SKIP_TYPECHECK=true pnpm run build
+        run: pnpm run build
         working-directory: ./artifacts
+        env:
+          CI: false
+          VITE_SKIP_TYPECHECK: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
