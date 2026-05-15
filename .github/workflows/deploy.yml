@@ -29,10 +29,14 @@ jobs:
 
       - name: Build Website
         run: |
+          # 1. Go into the folder where the real code is
           cd artifacts
+          
+          # 2. Force install only what the website needs
           pnpm install --no-frozen-lockfile --ignore-workspace || true
-          # We tell Vite explicitly to look at the current folder (.) for the index.html
-          npx vite build .
+          
+          # 3. Manually run the builder
+          npx vite build
         env:
           CI: false
 
