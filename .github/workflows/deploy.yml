@@ -29,13 +29,13 @@ jobs:
 
       - name: Build Website
         run: |
-          # 1. Go into the folder where the real code is
-          cd artifacts
+          # Go deep into the folder where the real website is
+          cd artifacts/pdfsigns
           
-          # 2. Force install only what the website needs
+          # Force install only what this specific site needs
           pnpm install --no-frozen-lockfile --ignore-workspace || true
           
-          # 3. Manually run the builder
+          # Run the build
           npx vite build
         env:
           CI: false
@@ -43,7 +43,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './artifacts/dist'
+          # Tell GitHub that the finished site is inside this deep folder
+          path: './artifacts/pdfsigns/dist'
 
   deploy:
     environment:
