@@ -33,6 +33,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Install missing packages
+        run: |
+          pnpm add drizzle-orm pg --filter ./lib/db
+          pnpm add -D @types/node --filter ./lib/db
+          pnpm add @tanstack/react-query --filter ./lib/api-client-react
+          pnpm add zod --filter ./lib/api-zod
+
       - name: Build project
         run: pnpm build
         env:
