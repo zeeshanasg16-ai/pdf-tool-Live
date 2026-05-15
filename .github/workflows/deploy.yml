@@ -31,8 +31,8 @@ jobs:
         run: |
           cd artifacts
           pnpm install --no-frozen-lockfile --ignore-workspace || true
-          # Manually trigger the builder to skip broken workspace checks
-          npx vite build
+          # We tell Vite explicitly to look at the current folder (.) for the index.html
+          npx vite build .
         env:
           CI: false
 
