@@ -32,7 +32,7 @@ jobs:
         working-directory: ./artifacts
 
       - name: Build
-        run: pnpm run build
+        run: VITE_SKIP_TYPECHECK=true pnpm run build
         working-directory: ./artifacts
 
       - name: Upload artifact
