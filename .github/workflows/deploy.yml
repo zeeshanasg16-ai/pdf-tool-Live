@@ -24,12 +24,13 @@ jobs:
 
       - name: Build Website
         run: |
+          # Go directly to the website folder
           cd artifacts/pdfsigns
           
-          # Using npm instead of pnpm to bypass the strict workspace/catalog checks
-          npm install --force
+          # Use standard npm to bypass pnpm workspace drama
+          npm install --no-package-lock
           
-          # Run the build
+          # Run the build tool directly
           npx vite build
         env:
           CI: false
