@@ -13,6 +13,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,31 +23,48 @@ jobs:
         with:
           version: 8
 
-      - name: Set up Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'pnpm'
 
-      - name: Force Install & Build
+      - name: Install dependencies
         run: |
           cd artifacts
-          pnpm install --no-frozen-lockfile --ignore-workspace
+          pnpm install --no-frozen-lockfile
+
+      - name: Install missing packages
+        run: |
+          cd artifacts
+          pnpm add zod @tanstack/react-query pg drizzle-orm
+          pnpm add -D @types/node
+
+      - name: Build project
+        run: |
+          cd artifacts
           pnpm run build
         env:
           CI: false
-          VITE_SKIP_TYPECHECK: true
 
-      - name: Upload artifact
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './artifacts/dist'
+          path: ./artifacts/dist
 
   deploy:
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
-    needs: build
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
