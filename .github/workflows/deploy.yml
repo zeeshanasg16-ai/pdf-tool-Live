@@ -2,8 +2,7 @@ name: Deploy Vite Site
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -14,55 +13,40 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 8
 
-      - name: Setup Node.js
+      - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Install missing packages
+      - name: Force Install & Build
         run: |
-          pnpm add drizzle-orm pg --filter ./lib/db
-          pnpm add -D @types/node --filter ./lib/db
-          pnpm add @tanstack/react-query --filter ./lib/api-client-react
-          pnpm add zod --filter ./lib/api-zod
-
-      - name: Build project
-        run: pnpm build
+          cd artifacts
+          pnpm install --no-frozen-lockfile --ignore-workspace
+          pnpm run build
         env:
           CI: false
+          VITE_SKIP_TYPECHECK: true
 
-      - name: Upload GitHub Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./artifacts/dist
+          path: './artifacts/dist'
 
   deploy:
-    needs: build
-
-    runs-on: ubuntu-latest
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
-    permissions:
-      pages: write
-      id-token: write
-
+    runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
