@@ -24,13 +24,13 @@ jobs:
 
       - name: Build Website
         run: |
-          # Go directly to the website folder
+          # Step into the folder where the index.html and vite.config are
           cd artifacts/pdfsigns
           
-          # Use standard npm to bypass pnpm workspace drama
+          # Use standard npm to ignore the top-level 'catalog' error
           npm install --no-package-lock
           
-          # Run the build tool directly
+          # Build the production files
           npx vite build
         env:
           CI: false
