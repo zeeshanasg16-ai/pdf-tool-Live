@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // Single-page app redirect for GitHub Pages.
+      // When GitHub Pages 404s on a route like /pdf-editor, this page
+      // encodes the path and redirects to index.html with a query param.
+      // index.html then restores the URL using history.replaceState.
+      var path = window.location.pathname;
+      var search = window.location.search;
+      var hash = window.location.hash;
+      var redirect = "/?p=" + encodeURIComponent(path + search + hash);
+      window.location.replace(redirect);
+    </script>
+    <title>PdfSigns</title>
+  </head>
+  <body></body>
+</html>
