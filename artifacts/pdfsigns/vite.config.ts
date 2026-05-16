@@ -4,16 +4,17 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-
-  // IMPORTANT: tells Vite where your real source code is
-  root: path.resolve(__dirname, "../.."), // adjust if needed
-
+  root: path.resolve(__dirname),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "../../src"),
+      "@": path.resolve(__dirname, "src"),
     },
   },
-
+  server: {
+    host: "0.0.0.0",
+    port: parseInt(process.env.PORT || "5173"),
+    allowedHosts: true,
+  },
   build: {
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
