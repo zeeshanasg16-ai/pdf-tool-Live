@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -20,6 +20,8 @@ interface Annotation {
   width?: number;
   height?: number;
 }
+
+const SYMBOL_SIZE = 16; // px at scale=1, used for centering
 
 export default function PdfEditor() {
   const [file, setFile] = useState<File | null>(null);
@@ -54,6 +56,7 @@ export default function PdfEditor() {
     if (currentTool === 'select') return;
 
     const rect = e.currentTarget.getBoundingClientRect();
+    // Store the center of the symbol in unscaled page coords
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
 
@@ -67,75 +70,86 @@ export default function PdfEditor() {
       ...(currentTool === 'highlight' ? { width: 100, height: 20 } : {}),
     };
 
-    setAnnotations([...annotations, newAnnotation]);
-    if (currentTool !== 'text') {
-      setCurrentTool('select');
-    } else {
-      setCurrentTool('select');
-    }
+    setAnnotations(prev => [...prev, newAnnotation]);
+    if (currentTool !== 'text') setCurrentTool('select');
   };
 
   const updateAnnotation = (id: string, updates: Partial<Annotation>) => {
-    setAnnotations(annotations.map(a => (a.id === id ? { ...a, ...updates } : a)));
+    setAnnotations(prev => prev.map(a => (a.id === id ? { ...a, ...updates } : a)));
   };
 
   const removeAnnotation = (id: string) => {
-    setAnnotations(annotations.filter(a => a.id !== id));
+    setAnnotations(prev => prev.filter(a => a.id !== id));
   };
 
-  const undoLast = () => {
-    setAnnotations(annotations.slice(0, -1));
-  };
-
-  const clearAll = () => {
-    setAnnotations([]);
-  };
+  const undoLast = () => setAnnotations(prev => prev.slice(0, -1));
+  const clearAll = () => setAnnotations([]);
 
   const downloadPdf = async () => {
     if (!file) return;
     setIsDownloading(true);
-
     try {
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await PDFDocument.load(arrayBuffer);
       const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
       for (const ann of annotations) {
         const page = pdfDoc.getPage(ann.pageNumber - 1);
-        const { height } = page.getSize();
+        const { height: pageHeight } = page.getSize();
+
+        // Convert from screen coords (top-left origin) to PDF coords (bottom-left origin)
+        const pdfX = ann.x;
+        const pdfY = pageHeight - ann.y;
 
         if (ann.type === 'text' && ann.text) {
           page.drawText(ann.text, {
-            x: ann.x,
-            y: height - ann.y - 12,
+            x: pdfX,
+            y: pdfY - 12,
             size: 14,
             font: helveticaFont,
             color: rgb(0, 0, 0),
           });
         } else if (ann.type === 'highlight') {
           page.drawRectangle({
-            x: ann.x,
-            y: height - ann.y - (ann.height || 20),
+            x: pdfX,
+            y: pdfY - (ann.height || 20),
             width: ann.width || 100,
             height: ann.height || 20,
             color: rgb(1, 1, 0),
             opacity: 0.5,
           });
         } else if (ann.type === 'tick') {
-          page.drawText('✓', {
-            x: ann.x,
-            y: height - ann.y - 20,
-            size: 24,
-            font: helveticaBold,
-            color: rgb(0, 0.6, 0.1),
+          // Draw a green checkmark using two lines centered on click point
+          const s = SYMBOL_SIZE;
+          const cx = pdfX;
+          const cy = pdfY;
+          page.drawLine({
+            start: { x: cx - s * 0.45, y: cy },
+            end:   { x: cx - s * 0.1,  y: cy - s * 0.45 },
+            thickness: 2.2,
+            color: rgb(0.04, 0.6, 0.12),
+          });
+          page.drawLine({
+            start: { x: cx - s * 0.1,  y: cy - s * 0.45 },
+            end:   { x: cx + s * 0.55, y: cy + s * 0.55 },
+            thickness: 2.2,
+            color: rgb(0.04, 0.6, 0.12),
           });
         } else if (ann.type === 'cross') {
-          page.drawText('✗', {
-            x: ann.x,
-            y: height - ann.y - 20,
-            size: 24,
-            font: helveticaBold,
+          // Draw a red X using two diagonal lines centered on click point
+          const s = SYMBOL_SIZE * 0.5;
+          const cx = pdfX;
+          const cy = pdfY;
+          page.drawLine({
+            start: { x: cx - s, y: cy + s },
+            end:   { x: cx + s, y: cy - s },
+            thickness: 2.2,
+            color: rgb(0.85, 0.1, 0.1),
+          });
+          page.drawLine({
+            start: { x: cx + s, y: cy + s },
+            end:   { x: cx - s, y: cy - s },
+            thickness: 2.2,
             color: rgb(0.85, 0.1, 0.1),
           });
         }
@@ -185,42 +199,34 @@ export default function PdfEditor() {
       <div className="sticky top-16 z-40 bg-background border-b shadow-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-1 flex-wrap">
-            <Button
-              variant={currentTool === 'select' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setCurrentTool('select')}
-            >
+            <Button variant={currentTool === 'select' ? 'default' : 'ghost'} size="sm" onClick={() => setCurrentTool('select')}>
               <MousePointer2 className="w-4 h-4 mr-1" /> Select
             </Button>
-            <Button
-              variant={currentTool === 'text' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setCurrentTool('text')}
-            >
+            <Button variant={currentTool === 'text' ? 'default' : 'ghost'} size="sm" onClick={() => setCurrentTool('text')}>
               <Type className="w-4 h-4 mr-1" /> Text
             </Button>
-            <Button
-              variant={currentTool === 'highlight' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setCurrentTool('highlight')}
-            >
+            <Button variant={currentTool === 'highlight' ? 'default' : 'ghost'} size="sm" onClick={() => setCurrentTool('highlight')}>
               <Highlighter className="w-4 h-4 mr-1" /> Highlight
             </Button>
             <Button
-              variant={currentTool === 'tick' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setCurrentTool('tick')}
-              className={currentTool === 'tick' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-green-700 hover:text-green-800 hover:bg-green-50'}
+              className={currentTool === 'tick'
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-white border border-green-600 text-green-700 hover:bg-green-50'}
             >
-              <Check className="w-4 h-4 mr-1" /> Tick ✓
+              <Check className="w-4 h-4 mr-1" />
+              <span className="font-bold">✓ Tick</span>
             </Button>
             <Button
-              variant={currentTool === 'cross' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setCurrentTool('cross')}
-              className={currentTool === 'cross' ? 'bg-red-600 hover:bg-red-700 text-white' : 'text-red-700 hover:text-red-800 hover:bg-red-50'}
+              className={currentTool === 'cross'
+                ? 'bg-red-600 hover:bg-red-700 text-white'
+                : 'bg-white border border-red-600 text-red-700 hover:bg-red-50'}
             >
-              <X className="w-4 h-4 mr-1" /> Cross ✗
+              <X className="w-4 h-4 mr-1" />
+              <span className="font-bold">✗ Cross</span>
             </Button>
           </div>
           <div className="flex items-center gap-1">
@@ -237,16 +243,15 @@ export default function PdfEditor() {
           </div>
         </div>
 
-        {/* Tool hint banner */}
         {currentTool !== 'select' && (
           <div className={`text-center text-xs py-1 font-medium ${
-            currentTool === 'tick' ? 'bg-green-100 text-green-800' :
-            currentTool === 'cross' ? 'bg-red-100 text-red-800' :
+            currentTool === 'tick'      ? 'bg-green-100 text-green-800' :
+            currentTool === 'cross'     ? 'bg-red-100 text-red-800' :
             'bg-primary/10 text-primary'
           }`}>
-            {currentTool === 'tick' && '✓ Click anywhere on the PDF to place a tick mark'}
-            {currentTool === 'cross' && '✗ Click anywhere on the PDF to place a cross mark'}
-            {currentTool === 'text' && 'Click anywhere on the PDF to add a text box'}
+            {currentTool === 'tick'      && '✓ Click the centre of a checkbox to place a green tick'}
+            {currentTool === 'cross'     && '✗ Click the centre of a checkbox to place a red cross'}
+            {currentTool === 'text'      && 'Click anywhere on the PDF to add a text box'}
             {currentTool === 'highlight' && 'Click anywhere on the PDF to add a highlight'}
           </div>
         )}
@@ -255,7 +260,7 @@ export default function PdfEditor() {
       <div className="flex-1 overflow-auto p-8">
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-8">
           <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess} className="flex flex-col gap-8">
-            {Array.from(new Array(numPages), (el, index) => (
+            {Array.from(new Array(numPages), (_el, index) => (
               <div key={`page_${index + 1}`} className="relative shadow-md rounded-sm overflow-hidden bg-white">
                 <Page
                   pageNumber={index + 1}
@@ -264,7 +269,7 @@ export default function PdfEditor() {
                   renderAnnotationLayer={false}
                 />
 
-                {/* Interaction / Overlay Layer */}
+                {/* Overlay — click coords become annotation center */}
                 <div
                   className="absolute inset-0 z-10"
                   style={{ cursor: currentTool !== 'select' ? 'crosshair' : 'default' }}
@@ -275,52 +280,66 @@ export default function PdfEditor() {
                       key={ann.id}
                       className="absolute group"
                       style={{
+                        // Center the symbol on the stored click point
                         left: `${ann.x * scale}px`,
-                        top: `${ann.y * scale}px`,
+                        top:  `${ann.y * scale}px`,
+                        transform: (ann.type === 'tick' || ann.type === 'cross')
+                          ? 'translate(-50%, -50%)'
+                          : undefined,
                       }}
                       onClick={(e) => e.stopPropagation()}
                     >
                       {ann.type === 'tick' && (
-                        <div className="relative">
-                          <span
-                            className="text-green-600 font-bold leading-none select-none"
-                            style={{ fontSize: `${24 * scale}px` }}
+                        <div className="relative flex items-center justify-center">
+                          <svg
+                            width={SYMBOL_SIZE * 2 * scale}
+                            height={SYMBOL_SIZE * 2 * scale}
+                            viewBox="0 0 32 32"
+                            fill="none"
                           >
-                            ✓
-                          </span>
+                            <polyline
+                              points="4,16 12,24 28,8"
+                              stroke="#16a34a"
+                              strokeWidth="3.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
                           <button
                             onClick={() => removeAnnotation(ann.id)}
-                            className="absolute -top-2 -right-3 hidden group-hover:flex w-4 h-4 bg-red-500 text-white rounded-full items-center justify-center text-[9px] leading-none z-20"
-                          >
-                            ×
-                          </button>
+                            className="absolute -top-2 -right-2 hidden group-hover:flex w-4 h-4 bg-red-500 text-white rounded-full items-center justify-center text-[9px] leading-none z-20"
+                          >×</button>
                         </div>
                       )}
+
                       {ann.type === 'cross' && (
-                        <div className="relative">
-                          <span
-                            className="text-red-600 font-bold leading-none select-none"
-                            style={{ fontSize: `${24 * scale}px` }}
+                        <div className="relative flex items-center justify-center">
+                          <svg
+                            width={SYMBOL_SIZE * 2 * scale}
+                            height={SYMBOL_SIZE * 2 * scale}
+                            viewBox="0 0 32 32"
+                            fill="none"
                           >
-                            ✗
-                          </span>
+                            <line x1="6" y1="6"  x2="26" y2="26" stroke="#dc2626" strokeWidth="3.5" strokeLinecap="round"/>
+                            <line x1="26" y1="6" x2="6"  y2="26" stroke="#dc2626" strokeWidth="3.5" strokeLinecap="round"/>
+                          </svg>
                           <button
                             onClick={() => removeAnnotation(ann.id)}
-                            className="absolute -top-2 -right-3 hidden group-hover:flex w-4 h-4 bg-red-500 text-white rounded-full items-center justify-center text-[9px] leading-none z-20"
-                          >
-                            ×
-                          </button>
+                            className="absolute -top-2 -right-2 hidden group-hover:flex w-4 h-4 bg-red-500 text-white rounded-full items-center justify-center text-[9px] leading-none z-20"
+                          >×</button>
                         </div>
                       )}
+
                       {ann.type === 'highlight' && (
                         <div
                           className="bg-yellow-300/50 pointer-events-none"
                           style={{
-                            width: `${(ann.width || 100) * scale}px`,
-                            height: `${(ann.height || 20) * scale}px`,
+                            width:  `${(ann.width  || 100) * scale}px`,
+                            height: `${(ann.height || 20)  * scale}px`,
                           }}
                         />
                       )}
+
                       {ann.type === 'text' && (
                         <div className="relative">
                           <input
@@ -334,9 +353,7 @@ export default function PdfEditor() {
                           <button
                             onClick={() => removeAnnotation(ann.id)}
                             className="absolute -top-2 -right-3 hidden group-hover:flex w-4 h-4 bg-red-500 text-white rounded-full items-center justify-center text-[9px] leading-none z-20"
-                          >
-                            ×
-                          </button>
+                          >×</button>
                         </div>
                       )}
                     </div>
