@@ -19,7 +19,7 @@ run = "pnpm --filter @workspace/pdfsigns run dev"
 
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/pdfsigns", "run", "build" ]
-publicDir = "artifacts/pdfsigns/dist/public"
+publicDir = "artifacts/pdfsigns/dist"
 serve = "static"
 
 [[services.production.rewrites]]
