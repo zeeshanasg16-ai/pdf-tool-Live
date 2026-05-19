@@ -1,8 +1,14 @@
 import { Link } from "wouter";
 import { ArrowRight, FileText, Signature, Camera, ShieldCheck, Zap, Lock, SplitSquareHorizontal, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePageMeta } from "@/hooks/use-page-meta";
 
 export default function Home() {
+  usePageMeta({
+    title: "PdfSigns - Free PDF Tools for UK Businesses | Edit, Sign & Compress",
+    description: "Free online PDF tools for UK businesses. Edit, sign, merge, split, compress PDFs and resize passport photos — 100% private, browser-based, no uploads.",
+    canonical: "https://pdfsigns.co.uk/",
+  });
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
       {/* Hero Section */}

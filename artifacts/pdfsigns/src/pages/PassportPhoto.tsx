@@ -1,8 +1,14 @@
 import { useState, useRef } from 'react';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { UploadCloud, Download, Image as ImageIcon, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function PassportPhoto() {
+  usePageMeta({
+    title: "Free UK Passport Photo Resizer Online | 45x35mm 600dpi | PdfSigns",
+    description: "Resize any photo to official UK passport size (45×35mm at 600dpi) instantly in your browser. Free, private, no uploads needed.",
+    canonical: "https://pdfsigns.co.uk/passport-photo",
+  });
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   

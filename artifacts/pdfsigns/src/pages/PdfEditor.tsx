@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -24,6 +25,11 @@ interface Annotation {
 const SYMBOL_SIZE = 16; // px at scale=1, used for centering
 
 export default function PdfEditor() {
+  usePageMeta({
+    title: "Free PDF Editor Online | Add Text, Highlights & Signatures | PdfSigns",
+    description: "Edit PDF files free in your browser. Add text, highlights, tick marks and crosses to any PDF. No uploads, no registration — 100% private.",
+    canonical: "https://pdfsigns.co.uk/pdf-editor",
+  });
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);

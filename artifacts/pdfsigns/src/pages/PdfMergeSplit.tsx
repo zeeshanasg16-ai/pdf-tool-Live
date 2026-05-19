@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { PDFDocument } from "pdf-lib";
 import { FilePlus2, Scissors, Upload, Trash2, ChevronUp, ChevronDown, Download, ArrowLeftRight, GripVertical, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,11 @@ interface SplitRange {
 }
 
 export default function PdfMergeSplit() {
+  usePageMeta({
+    title: "Merge & Split PDF Files Free Online | PdfSigns",
+    description: "Combine multiple PDFs into one or split a PDF into separate pages. Free, instant, and completely private — no file uploads to any server.",
+    canonical: "https://pdfsigns.co.uk/pdf-merge-split",
+  });
   const [mode, setMode] = useState<Mode>("merge");
   const [files, setFiles] = useState<PdfFile[]>([]);
   const [splitFile, setSplitFile] = useState<PdfFile | null>(null);

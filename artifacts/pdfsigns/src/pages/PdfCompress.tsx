@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { PDFDocument, decodePDFRawStream } from "pdf-lib";
 import { Upload, Gauge, Download, FileCheck2, X, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,11 @@ function savingsPercent(original: number, compressed: number) {
 }
 
 export default function PdfCompress() {
+  usePageMeta({
+    title: "Compress PDF Online Free | Reduce PDF File Size | PdfSigns",
+    description: "Reduce your PDF file size online for free. Choose light, standard or aggressive compression — all processing happens in your browser, nothing is uploaded.",
+    canonical: "https://pdfsigns.co.uk/pdf-compress",
+  });
   const [file, setFile] = useState<File | null>(null);
   const [level, setLevel] = useState<Level>("standard");
   const [isDraggingOver, setIsDraggingOver] = useState(false);

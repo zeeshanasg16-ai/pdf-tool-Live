@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -19,6 +20,11 @@ interface PlacedSignature {
 }
 
 export default function ESign() {
+  usePageMeta({
+    title: "Sign PDF Documents Online Free | Electronic Signature | PdfSigns",
+    description: "Draw and place your electronic signature on any PDF document for free. No account needed — sign contracts and agreements securely in your browser.",
+    canonical: "https://pdfsigns.co.uk/e-sign",
+  });
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
