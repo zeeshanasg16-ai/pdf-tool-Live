@@ -1,0 +1,119 @@
+Use this prompt with ChatGPT or another AI tool to get a full SEO and growth strategy for your web app:
+
+Act as an expert SEO strategist, technical SEO engineer, content marketer, and startup growth consultant.
+
+I have a web application and I want to rank it highly on Google and grow organic traffic, users, and conversions.
+
+Please create a complete step-by-step strategy covering:
+
+1. Technical SEO
+
+* Site structure
+* Page indexing
+* XML sitemap
+* Robots.txt
+* Canonical tags
+* Core Web Vitals
+* Mobile optimization
+* Schema markup
+* Internal linking
+* JavaScript SEO
+* SSR/SSG recommendations
+* SEO for React/Next.js/Vue apps
+* Speed optimization
+
+2. On-Page SEO
+
+* Keyword research strategy
+* Long-tail keyword ideas
+* Meta titles and descriptions
+* Heading structure
+* URL optimization
+* Image SEO
+* Content optimization
+
+3. Content Marketing Plan
+
+* Blog topic ideas
+* SEO landing pages
+* Comparison pages
+* Tutorial content
+* FAQ strategy
+* Content clusters
+* Topical authority strategy
+* Weekly content schedule
+
+4. Backlink Strategy
+
+* How to get high-quality backlinks
+* Outreach methods
+* Guest posting ideas
+* Free directory submissions
+* Reddit/community marketing
+* Product Hunt launch strategy
+* Link-building outreach templates
+
+5. User Experience & Conversion Optimization
+
+* Reduce bounce rate
+* Improve engagement
+* Improve retention
+* Increase signups
+* Better CTA placement
+* UX recommendations
+
+6. Analytics & Tracking
+
+* Google Search Console setup
+* Google Analytics setup
+* Important SEO metrics to track
+* Conversion tracking
+* KPI dashboard suggestions
+
+7. Growth Strategy
+
+* Free traffic methods
+* Startup growth hacks
+* Social media strategy
+* Email marketing funnel
+* Local SEO if relevant
+* Community-building ideas
+
+8. Competitor Analysis
+
+* How to analyze competitors
+* How to find keyword gaps
+* How to outrank competitors
+
+9. AI SEO Workflow
+
+* Best AI tools for SEO
+* Content automation ideas
+* AI-assisted keyword research
+* AI content optimization workflow
+
+10. Action Plan
+    Provide:
+
+* A 30-day SEO plan
+* A 90-day growth roadmap
+* Priority tasks
+* Easy wins first
+* Advanced strategies later
+
+My web app niche is:
+[INSERT YOUR WEB APP NICHE]
+
+My target audience is:
+[INSERT TARGET USERS]
+
+My tech stack is:
+[INSERT TECH STACK]
+
+My current monthly traffic is:
+[INSERT TRAFFIC]
+
+My main competitors are:
+[INSERT COMPETITORS]
+
+Please give practical, modern, actionable advice with examples and recommended tools.
